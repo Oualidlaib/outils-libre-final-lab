@@ -12,21 +12,25 @@ public class PricingEngine {
     public double calculate(List<Double> prices, List<Integer> quantities,
                             String customerType, String promoCode) {
 
-        double total = 0;
-        for (int i = 0; i < prices.size(); i++) {
-            total += prices.get(i) * quantities.get(i);
-        }
+        double total     = computeTotal(prices, quantities);
 
-        DiscountStrategy strategy  = DiscountStrategyFactory.resolve(customerType);
-        double discountAmount      = strategy.apply(total, promoCode);
+        DiscountStrategy strategy = DiscountStrategyFactory.resolve(customerType);
+        double discountAmount     = strategy.apply(total, promoCode);
 
         double subtotal   = total - discountAmount;
         double taxAmount  = subtotal * TAX_RATE;
         double finalPrice = subtotal + taxAmount;
 
-        Invoice invoice = new Invoice(total, discountAmount, taxAmount, finalPrice);
-        printer.print(invoice);
+        printer.print(new Invoice(total, discountAmount, taxAmount, finalPrice));
 
         return finalPrice;
+    }
+
+    private double computeTotal(List<Double> prices, List<Integer> quantities) {
+        double total = 0;
+        for (int i = 0; i < prices.size(); i++) {
+            total += prices.get(i) * quantities.get(i);
+        }
+        return total;
     }
 }

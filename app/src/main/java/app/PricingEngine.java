@@ -4,52 +4,60 @@ import java.util.List;
 
 public class PricingEngine {
 
-    
-    public double calculate(List<Double> prices, List<Integer> quantities, String customerType, String promoCode) {
-        double total = 0;
+    // Constants 
+    private static final double TAX_RATE = 0.08;
 
+    private static final String CUSTOMER_REGULAR = "REGULAR";
+    private static final String CUSTOMER_VIP     = "VIP";
+
+    private static final String PROMO_SAVE10 = "SAVE10";
+    private static final String PROMO_SAVE20 = "SAVE20";
+
+    private static final double DISCOUNT_VIP_BASE          = 0.15;
+    private static final double DISCOUNT_SAVE10            = 0.10;
+    private static final double DISCOUNT_SAVE20            = 0.20;
+    private static final double DISCOUNT_VIP_WITH_SAVE10   = 0.25;
+    private static final double DISCOUNT_VIP_WITH_SAVE20   = 0.35;
+
+    public double calculate(List<Double> prices, List<Integer> quantities,
+                            String customerType, String promoCode) {
+
+        double total = 0;
         for (int i = 0; i < prices.size(); i++) {
             total += prices.get(i) * quantities.get(i);
         }
 
         double discount = 0;
-        
-        // Nested IF statements
-        if (customerType.equals("REGULAR")) {
+
+        if (customerType.equals(CUSTOMER_REGULAR)) {
             if (promoCode != null) {
-                if (promoCode.equals("SAVE10")) {
-                    discount = total * 0.1;
-                } else if (promoCode.equals("SAVE20")) {
-                    discount = total * 0.2;
+                if (promoCode.equals(PROMO_SAVE10)) {
+                    discount = DISCOUNT_SAVE10;
+                } else if (promoCode.equals(PROMO_SAVE20)) {
+                    discount = DISCOUNT_SAVE20;
                 }
             }
-        } else if (customerType.equals("VIP")) {
-
-            // VIPs get 15% discount automatically
-            discount = total * 0.15;
+        } else if (customerType.equals(CUSTOMER_VIP)) {
+            discount = DISCOUNT_VIP_BASE;
             if (promoCode != null) {
-                if (promoCode.equals("SAVE20")) {
-                    // VIP 15% + 20% bonus = 35%
-                    discount = total * 0.35; 
-                } else if (promoCode.equals("SAVE10")) {
-                    // VIP 15% + 10% bonus = 25% 
-                    discount = total * 0.25; 
+                if (promoCode.equals(PROMO_SAVE20)) {
+                    discount = DISCOUNT_VIP_WITH_SAVE20;
+                } else if (promoCode.equals(PROMO_SAVE10)) {
+                    discount = DISCOUNT_VIP_WITH_SAVE10;
                 }
             }
         }
 
-        double subtotal = total - discount;
-        
-        double tax = subtotal * 0.08; 
-        
-        double finalPrice = subtotal + tax;
+        double discountAmount = total * discount;
+        double subtotal       = total - discountAmount;
+        double taxAmount      = subtotal * TAX_RATE;
+        double finalPrice     = subtotal + taxAmount;
 
-        // Printing the invoice
         System.out.println("--- Invoice ---");
-        System.out.println("Subtotal: " + total);
-        System.out.println("Discount: " + discount);
-        System.out.println("Tax: " + tax);
-        System.out.println("Final: " + finalPrice);
+        System.out.println("Subtotal: "  + total);
+        System.out.println("Discount: "  + discountAmount);
+        System.out.println("Tax: "       + taxAmount);
+        System.out.println("Final: "     + finalPrice);
 
         return finalPrice;
     }

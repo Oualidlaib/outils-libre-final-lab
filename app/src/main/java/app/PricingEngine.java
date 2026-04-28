@@ -1,4 +1,3 @@
-// PricingEngine.java
 package app;
 
 import java.util.List;
@@ -9,13 +8,12 @@ public class PricingEngine {
 
     private final InvoicePrinter printer = new InvoicePrinter();
 
-    public double calculate(List<Double> prices, List<Integer> quantities,
-                            String customerType, String promoCode) {
+    public double calculate(PricingRequest request) {
 
-        double total     = computeTotal(prices, quantities);
+        double total     = computeTotal(request.prices, request.quantities);
 
-        DiscountStrategy strategy = DiscountStrategyFactory.resolve(customerType);
-        double discountAmount     = strategy.apply(total, promoCode);
+        DiscountStrategy strategy = DiscountStrategyFactory.resolve(request.customerType);
+        double discountAmount     = strategy.apply(total, request.promoCode);
 
         double subtotal   = total - discountAmount;
         double taxAmount  = subtotal * TAX_RATE;

@@ -33,7 +33,8 @@ public class Main {
                                      ? args[3]
                                      : null;
 
-        new PricingEngine().calculate(prices, quantities, customerType, promoCode);
+        PricingRequest request = new PricingRequest(prices, quantities, customerType, promoCode);
+        new PricingEngine().calculate(request);
     }
 
     private static List<Double> parseDoubles(String csv) {

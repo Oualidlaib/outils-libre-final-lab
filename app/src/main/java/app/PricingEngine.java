@@ -7,6 +7,8 @@ public class PricingEngine {
 
     private static final double TAX_RATE = 0.08;
 
+    private final InvoicePrinter printer = new InvoicePrinter();
+
     public double calculate(List<Double> prices, List<Integer> quantities,
                             String customerType, String promoCode) {
 
@@ -15,18 +17,15 @@ public class PricingEngine {
             total += prices.get(i) * quantities.get(i);
         }
 
-        DiscountStrategy strategy = DiscountStrategyFactory.resolve(customerType);
-        double discountAmount     = strategy.apply(total, promoCode);
+        DiscountStrategy strategy  = DiscountStrategyFactory.resolve(customerType);
+        double discountAmount      = strategy.apply(total, promoCode);
 
         double subtotal   = total - discountAmount;
         double taxAmount  = subtotal * TAX_RATE;
         double finalPrice = subtotal + taxAmount;
 
-        System.out.println("--- Invoice ---");
-        System.out.println("Subtotal: " + total);
-        System.out.println("Discount: " + discountAmount);
-        System.out.println("Tax: "      + taxAmount);
-        System.out.println("Final: "    + finalPrice);
+        Invoice invoice = new Invoice(total, discountAmount, taxAmount, finalPrice);
+        printer.print(invoice);
 
         return finalPrice;
     }
